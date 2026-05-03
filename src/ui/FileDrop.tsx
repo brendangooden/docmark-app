@@ -12,8 +12,14 @@ export const FileDrop = ({ onFile, hint }: Props) => {
   const accept = useCallback(
     (file: File | null | undefined) => {
       if (!file) return;
-      if (!file.name.toLowerCase().endsWith(".pdf") && file.type !== "application/pdf") {
-        alert("Please upload a PDF file.");
+      const lower = file.name.toLowerCase();
+      const isPdf = file.type === "application/pdf" || lower.endsWith(".pdf");
+      const isImage =
+        file.type === "image/jpeg" ||
+        file.type === "image/png" ||
+        /\.(jpe?g|png)$/.test(lower);
+      if (!isPdf && !isImage) {
+        alert("Please upload a PDF, JPG, or PNG.");
         return;
       }
       onFile(file);
@@ -42,10 +48,10 @@ export const FileDrop = ({ onFile, hint }: Props) => {
       ].join(" ")}
     >
       <div className="text-5xl">📐</div>
-      <h2 className="text-xl font-semibold text-slate-100">Drop a PDF to start</h2>
+      <h2 className="text-xl font-semibold text-slate-100">Drop a PDF or image to start</h2>
       <p className="max-w-md text-sm text-slate-400">
-        Everything happens in your browser — your file never leaves this device.
-        Set a scale, draw lines, get totals.
+        Supports PDF, JPG, and PNG. Everything happens in your browser — your file
+        never leaves this device. Set a scale, draw lines, get totals.
       </p>
       {hint && <p className="text-xs text-amber-300">{hint}</p>}
       <button
@@ -57,7 +63,7 @@ export const FileDrop = ({ onFile, hint }: Props) => {
       <input
         ref={inputRef}
         type="file"
-        accept="application/pdf"
+        accept="application/pdf,image/jpeg,image/png,.pdf,.jpg,.jpeg,.png"
         className="hidden"
         onChange={(e) => accept(e.target.files?.[0])}
       />

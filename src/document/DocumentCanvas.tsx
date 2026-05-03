@@ -1,15 +1,14 @@
 import { useEffect, useRef } from "react";
-import type { PDFPageProxy } from "pdfjs-dist";
+import type { DocumentPage } from "./types";
 import type { Rotation } from "../draw/rotation";
 
 type Props = {
-  page: PDFPageProxy;
+  page: DocumentPage;
   /** Base (unrotated) page dims */
   pageWidth: number;
   pageHeight: number;
-  /** CSS-px scale factor that maps base PDF units to screen at zoom=1 */
+  /** CSS-px scale factor that maps base PDF/image units to screen at zoom=1 */
   fitScale: number;
-  /** Rotation applied to the page */
   rotation: Rotation;
   /** Effective zoom level for resolution boost (debounced upstream) */
   renderZoom: number;
@@ -19,7 +18,7 @@ type Props = {
 
 const MAX_RENDER_ZOOM = 4;
 
-export const PdfCanvas = ({
+export const DocumentCanvas = ({
   page,
   pageWidth,
   pageHeight,
@@ -29,7 +28,6 @@ export const PdfCanvas = ({
   onCanvasRef,
 }: Props) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const renderTaskRef = useRef<{ cancel: () => void } | null>(null);
 
   const setCanvas = (el: HTMLCanvasElement | null) => {
     canvasRef.current = el;
@@ -46,7 +44,7 @@ export const PdfCanvas = ({
 
     canvas.width = Math.round(vp.width);
     canvas.height = Math.round(vp.height);
-    // CSS size — same as the viewport's content frame at zoom=1 in display coords
+
     const rotated = rotation === 90 || rotation === 270;
     const cssW = (rotated ? pageHeight : pageWidth) * fitScale;
     const cssH = (rotated ? pageWidth : pageHeight) * fitScale;
@@ -56,14 +54,17 @@ export const PdfCanvas = ({
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    renderTaskRef.current?.cancel();
-    const task = page.render({ canvasContext: ctx, viewport: vp });
-    renderTaskRef.current = task;
-    task.promise.catch((err: unknown) => {
-      const e = err as { name?: string };
-      if (e?.name !== "RenderingCancelledException") console.error(err);
-    });
-    return () => task.cancel();
+    let cancelled = false;
+    page
+      .render({ ctx, scale: renderScale, rotation })
+      .catch((err: unknown) => {
+        if (cancelled) return;
+        const e = err as { name?: string };
+        if (e?.name !== "RenderingCancelledException") console.error(err);
+      });
+    return () => {
+      cancelled = true;
+    };
   }, [page, pageWidth, pageHeight, fitScale, rotation, renderZoom]);
 
   return (

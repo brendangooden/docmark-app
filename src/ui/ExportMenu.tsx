@@ -1,11 +1,11 @@
 import { useState } from "react";
-import type { PDFPageProxy } from "pdfjs-dist";
+import type { DocumentPage } from "../document/types";
 import { useAppStore } from "../state/store";
 import { buildExportJson, downloadJson } from "../export/exportJson";
 import { exportPdf, exportPng } from "../export/exportImage";
 
 type Props = {
-  page: PDFPageProxy;
+  page: DocumentPage;
   pageWidth: number;
   pageHeight: number;
   baseName: string;

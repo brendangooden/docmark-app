@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 import type { Point } from "../draw/geometry";
 import { normalizeRotation, type Rotation } from "../draw/rotation";
+import type { DocumentKind } from "../document/types";
 import type { UnitSystem } from "../lib/units";
 
 export type ToolMode =
@@ -49,6 +50,7 @@ export type PdfMeta = {
   fileName: string;
   pageWidth: number;
   pageHeight: number;
+  documentKind: DocumentKind;
 } | null;
 
 type State = {
@@ -181,7 +183,7 @@ export const useAppStore = create<State & Actions>()(
     }),
     {
       name: "docmark.v1",
-      version: 4,
+      version: 5,
       storage: createJSONStorage(() => localStorage),
       partialize: (s) => ({
         pdf: s.pdf,
@@ -213,6 +215,12 @@ export const useAppStore = create<State & Actions>()(
             showMeasurements: true,
             ...m,
           }));
+        }
+        if (fromVersion < 5) {
+          const meta = p.pdf as Record<string, unknown> | null | undefined;
+          if (meta && typeof meta === "object" && meta.documentKind == null) {
+            meta.documentKind = "pdf";
+          }
         }
         return p;
       },

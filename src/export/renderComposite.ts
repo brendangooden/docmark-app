@@ -1,4 +1,4 @@
-import type { PDFPageProxy } from "pdfjs-dist";
+import type { DocumentPage } from "../document/types";
 import type { LineStyle, Measurement } from "../state/store";
 import {
   closestPointOnEllipse,
@@ -18,7 +18,7 @@ import {
 import { formatArea, formatLength, type UnitSystem } from "../lib/units";
 
 export type CompositeOptions = {
-  page: PDFPageProxy;
+  page: DocumentPage;
   pageWidth: number;
   pageHeight: number;
   rotation: Rotation;
@@ -44,7 +44,7 @@ export const renderComposite = async (
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("2D context unavailable");
 
-  await opts.page.render({ canvasContext: ctx, viewport: vp }).promise;
+  await opts.page.render({ ctx, scale, rotation: opts.rotation });
 
   ctx.save();
   ctx.scale(scale, scale);

@@ -7,11 +7,11 @@ import { ExportMenu } from "./ui/ExportMenu";
 import { GitHubBadge } from "./ui/GitHubBadge";
 import { HelpPopover } from "./ui/HelpPopover";
 import { Viewport } from "./draw/Viewport";
-import { PdfCanvas } from "./pdf/PdfCanvas";
+import { DocumentCanvas } from "./document/DocumentCanvas";
 import { MeasureStage } from "./draw/MeasureStage";
 import { Loupe } from "./draw/Loupe";
 import { displayDims } from "./draw/rotation";
-import { usePdfDocument } from "./pdf/usePdfDocument";
+import { useDocument } from "./document/useDocument";
 import { useAppStore } from "./state/store";
 
 const RENDER_ZOOM_DEBOUNCE_MS = 180;
@@ -39,19 +39,20 @@ const App = () => {
   const metersPerPdfUnit = useAppStore((s) => s.metersPerPdfUnit);
   const calibrationPdfLength = useAppStore((s) => s.calibrationPdfLength);
 
-  const { pdf, loading, error } = usePdfDocument(file);
+  const { doc, loading, error } = useDocument(file);
 
-  // Update store with file meta when pdf loads
+  // Update store with file meta when document loads
   useEffect(() => {
-    if (pdf && file) {
+    if (doc && file) {
       setPdfMeta({
         fileName: file.name,
-        pageWidth: pdf.pageWidth,
-        pageHeight: pdf.pageHeight,
+        pageWidth: doc.pageWidth,
+        pageHeight: doc.pageHeight,
+        documentKind: doc.kind,
       });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [pdf, file]);
+  }, [doc, file]);
 
   // Track viewport container size for fitScale
   useEffect(() => {
@@ -65,23 +66,23 @@ const App = () => {
     });
     ro.observe(el);
     return () => ro.disconnect();
-  }, [pdf]);
+  }, [doc]);
 
   // Display dims after rotation
   const displayDim = useMemo(() => {
-    if (!pdf) return { width: 0, height: 0 };
-    return displayDims(pdf.pageWidth, pdf.pageHeight, rotation);
-  }, [pdf, rotation]);
+    if (!doc) return { width: 0, height: 0 };
+    return displayDims(doc.pageWidth, doc.pageHeight, rotation);
+  }, [doc, rotation]);
 
   const fitScale = useMemo(() => {
-    if (!pdf) return 1;
+    if (!doc) return 1;
     if (container.w === 0 || container.h === 0) return 1;
     const margin = 40;
     return Math.min(
       (container.w - margin) / displayDim.width,
       (container.h - margin) / displayDim.height,
     );
-  }, [pdf, container.w, container.h, displayDim.width, displayDim.height]);
+  }, [doc, container.w, container.h, displayDim.width, displayDim.height]);
 
   // Debounced re-render of PDF at higher resolution when zoomed in
   const handleZoomChange = useCallback((z: number) => {
@@ -166,11 +167,11 @@ const App = () => {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          {pdf && (
+          {doc && (
             <ExportMenu
-              page={pdf.page}
-              pageWidth={pdf.pageWidth}
-              pageHeight={pdf.pageHeight}
+              page={doc.page}
+              pageWidth={doc.pageWidth}
+              pageHeight={doc.pageHeight}
               baseName={baseName}
             />
           )}
@@ -183,7 +184,7 @@ const App = () => {
               }}
               className="rounded px-2.5 py-1.5 text-xs text-slate-400 hover:bg-slate-800 hover:text-slate-100"
             >
-              Close PDF
+              Close
             </button>
           )}
           <span className="hidden h-6 w-px bg-slate-800 sm:block" />
@@ -191,7 +192,7 @@ const App = () => {
         </div>
       </header>
 
-      {pdf && <Toolbar onEditScale={() => setEditingScale(true)} />}
+      {doc && <Toolbar onEditScale={() => setEditingScale(true)} />}
 
       <div className="flex flex-1 overflow-hidden">
         <main ref={stageHostRef} className="relative flex-1">
@@ -202,24 +203,24 @@ const App = () => {
           )}
           {loading && (
             <div className="flex h-full items-center justify-center text-sm text-slate-400">
-              Loading PDF…
+              Loading…
             </div>
           )}
           {error && (
             <div className="flex h-full items-center justify-center text-sm text-rose-400">
-              Failed to load PDF: {error}
+              Failed to load file: {error}
             </div>
           )}
-          {pdf && (
+          {doc && (
             <Viewport
               contentWidth={contentW}
               contentHeight={contentH}
               onZoomChange={handleZoomChange}
               transformedChild={() => (
-                <PdfCanvas
-                  page={pdf.page}
-                  pageWidth={pdf.pageWidth}
-                  pageHeight={pdf.pageHeight}
+                <DocumentCanvas
+                  page={doc.page}
+                  pageWidth={doc.pageWidth}
+                  pageHeight={doc.pageHeight}
                   fitScale={fitScale}
                   rotation={rotation}
                   renderZoom={renderZoom}
@@ -229,8 +230,8 @@ const App = () => {
               overlay={({ pan, zoom, size, cursor }) => (
                 <>
                   <MeasureStage
-                    pageWidth={pdf.pageWidth}
-                    pageHeight={pdf.pageHeight}
+                    pageWidth={doc.pageWidth}
+                    pageHeight={doc.pageHeight}
                     rotation={rotation}
                     fitScale={fitScale}
                     zoom={zoom}
@@ -260,13 +261,13 @@ const App = () => {
               )}
             />
           )}
-          {pdf && tool === "calibrate" && pendingCalibration === null && (
+          {doc && tool === "calibrate" && pendingCalibration === null && (
             <div className="pointer-events-none absolute left-1/2 top-3 -translate-x-1/2 rounded bg-amber-500/90 px-3 py-1 text-xs font-semibold text-slate-950 shadow">
               Draw a line on a known dimension, then press Enter
             </div>
           )}
         </main>
-        {pdf && <MeasurementsPanel />}
+        {doc && <MeasurementsPanel />}
       </div>
 
       {pendingCalibration !== null && (
