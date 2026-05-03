@@ -4,6 +4,8 @@ import { Toolbar } from "./ui/Toolbar";
 import { MeasurementsPanel } from "./ui/MeasurementsPanel";
 import { CalibrationDialog } from "./ui/CalibrationDialog";
 import { ExportMenu } from "./ui/ExportMenu";
+import { Footer } from "./ui/Footer";
+import { HelpPopover } from "./ui/HelpPopover";
 import { Viewport } from "./draw/Viewport";
 import { PdfCanvas } from "./pdf/PdfCanvas";
 import { MeasureStage } from "./draw/MeasureStage";
@@ -297,6 +299,8 @@ const App = () => {
             }}
           />
         )}
+      <Footer />
+      <HelpPopover />
     </div>
   );
 };

@@ -1,5 +1,7 @@
 # DocMark
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+
 In-browser PDF measure & markup tool. Upload a PDF, set a scale, then mark up the document with measurements, shapes, and annotations.
 
 - 100 % client-side — your PDF never leaves the browser.
@@ -44,3 +46,6 @@ Keyboard: `V` select · `L` distance · `P` area · `R` rect · `O` ellipse · `
 ## Notes
 - Only the first PDF page is supported in v1.
 - PDF bytes aren't persisted — re-upload the same file on reload to restore your scale + measurements (kept in localStorage).
+
+## License
+[MIT](LICENSE) © Brendan Gooden
