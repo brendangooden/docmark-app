@@ -557,6 +557,11 @@ const dragGroupProps = (
 ) => ({
   draggable,
   onDragEnd: (e: Konva.KonvaEventObject<DragEvent>) => {
+    // Konva bubbles drag events; ignore drags that originate from a child
+    // (e.g. the suspended-label sub-group) so we don't translate the shape
+    // by the child's absolute coordinates.
+    if (e.target !== e.currentTarget) return;
+    if (!draggable) return;
     const dx = e.target.x();
     const dy = e.target.y();
     e.target.x(0);

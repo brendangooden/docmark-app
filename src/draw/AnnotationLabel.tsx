@@ -103,7 +103,16 @@ export const AnnotationLabel = ({
         x={labelScreenX}
         y={labelScreenY}
         draggable={draggable}
+        onMouseDown={(e) => {
+          // Don't let the label-drag start also fire shape selection / outer
+          // drag handlers — keeps the shape stationary while we move the label.
+          e.cancelBubble = true;
+        }}
+        onDragStart={(e) => {
+          e.cancelBubble = true;
+        }}
         onDragEnd={(e: Konva.KonvaEventObject<DragEvent>) => {
+          e.cancelBubble = true;
           const newScreen = { x: e.target.x(), y: e.target.y() };
           // Convert to base PDF coords
           const newBase = toBase(newScreen);
