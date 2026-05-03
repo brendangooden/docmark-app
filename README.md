@@ -1,6 +1,7 @@
 # DocMark
 
 [![Live at docmark.app](https://img.shields.io/badge/live-docmark.app-22d3ee?style=for-the-badge)](https://docmark.app)
+[![GitHub stars](https://img.shields.io/github/stars/brendangooden/docmark-app?style=for-the-badge&logo=github&color=facc15)](https://github.com/brendangooden/docmark-app/stargazers)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 In-browser document measure & markup tool. Drop a **PDF**, **JPG**, or **PNG**, set a scale, then chain distances, draw shapes, and add annotations — all without leaving the browser.
