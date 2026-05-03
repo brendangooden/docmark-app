@@ -1,10 +1,11 @@
 # DocMark
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Live at docmark.app](https://img.shields.io/badge/live-docmark.app-22d3ee?style=for-the-badge)](https://docmark.app)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
 
 In-browser document measure & markup tool. Drop a **PDF**, **JPG**, or **PNG**, set a scale, then chain distances, draw shapes, and add annotations — all without leaving the browser.
 
-🌐 **Live**: [docmark.app](https://docmark.app)
+**Try it now** → <https://docmark.app>
 
 - 100 % client-side — your file never leaves the browser. No backend, no accounts, no tracking.
 - Static-host friendly (deployed on Cloudflare Pages).
