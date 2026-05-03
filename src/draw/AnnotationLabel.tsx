@@ -88,7 +88,7 @@ export const AnnotationLabel = ({
   }
 
   return (
-    <Group listening={draggable}>
+    <Group listening>
       {leader && (
         <Line
           points={[leader.ax, leader.ay, leader.bx, leader.by]}
@@ -103,12 +103,9 @@ export const AnnotationLabel = ({
         x={labelScreenX}
         y={labelScreenY}
         draggable={draggable}
-        onMouseDown={(e) => {
-          // Don't let the label-drag start also fire shape selection / outer
-          // drag handlers — keeps the shape stationary while we move the label.
-          e.cancelBubble = true;
-        }}
         onDragStart={(e) => {
+          // Stop the drag from being interpreted as a translate of the parent
+          // shape (the outer shape group also listens for drag events).
           e.cancelBubble = true;
         }}
         onDragEnd={(e: Konva.KonvaEventObject<DragEvent>) => {
