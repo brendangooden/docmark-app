@@ -4,7 +4,7 @@ import { Toolbar } from "./ui/Toolbar";
 import { MeasurementsPanel } from "./ui/MeasurementsPanel";
 import { CalibrationDialog } from "./ui/CalibrationDialog";
 import { ExportMenu } from "./ui/ExportMenu";
-import { Footer } from "./ui/Footer";
+import { GitHubBadge } from "./ui/GitHubBadge";
 import { HelpPopover } from "./ui/HelpPopover";
 import { Viewport } from "./draw/Viewport";
 import { PdfCanvas } from "./pdf/PdfCanvas";
@@ -186,6 +186,8 @@ const App = () => {
               Close PDF
             </button>
           )}
+          <span className="hidden h-6 w-px bg-slate-800 sm:block" />
+          <GitHubBadge />
         </div>
       </header>
 
@@ -299,7 +301,6 @@ const App = () => {
             }}
           />
         )}
-      <Footer />
       <HelpPopover />
     </div>
   );
