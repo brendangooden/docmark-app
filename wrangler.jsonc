@@ -1,0 +1,6 @@
+{
+  "$schema": "node_modules/wrangler/schema.json",
+  "name": "docmark-app",
+  "compatibility_date": "2026-05-01",
+  "pages_build_output_dir": "./dist"
+}
